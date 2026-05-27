@@ -1,12 +1,13 @@
 {
   "name": "sga-app",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Aplicação desktop Electron para triagem e painel do SGA.",
   "main": "src/main.js",
   "scripts": {
     "dev": "electron .",
     "package": "cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --win dir --x64",
-    "build:totem": "cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --win zip nsis --x64"
+    "build:totem": "cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --win zip nsis --x64",
+    "publish:totem": "cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --win nsis --x64 --publish always"
   },
   "keywords": [
     "electron",
@@ -55,12 +56,9 @@
     ],
     "win": {
       "target": [
-        "dir",
-        "zip",
         "nsis"
       ],
-      "requestedExecutionLevel": "asInvoker",
-      "signtoolOptions": null
+      "requestedExecutionLevel": "asInvoker"
     },
     "nsis": {
       "oneClick": true,
