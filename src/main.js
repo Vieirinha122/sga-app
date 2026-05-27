@@ -1,9 +1,21 @@
-const { app, BrowserWindow, ipcMain, globalShortcut } = require("electron");
+const {
+  app,
+  BrowserWindow,
+  ipcMain,
+  globalShortcut,
+  dialog,
+} = require("electron");
 const path = require("path");
 const fs = require("fs");
 const Store = require("electron-store");
 const { execFile } = require("child_process");
-const { autoUpdater } = require("electron-updater"); // <-- Módulo de Auto-Update importado
+const { autoUpdater } = require("electron-updater");
+const log = require("electron-log"); // <-- Adicionada biblioteca de log profissional
+
+// Configuração do Logger para interceptar o Auto-Updater e salvar em arquivo no Totem
+autoUpdater.logger = log;
+autoUpdater.logger.transports.file.level = "info";
+autoUpdater.autoDownload = true; // Garante o download automático do .exe ao detectar a versão nova
 
 app.commandLine.appendSwitch("disable-features", "OverscrollHistoryNavigation");
 
@@ -13,7 +25,7 @@ if (fs.existsSync(configPath)) {
   try {
     JSON.parse(fs.readFileSync(configPath, "utf8"));
   } catch (e) {
-    console.log("Config corrompida detectada, removendo...");
+    log.error("Config corrompida detectada, removendo...");
     fs.unlinkSync(configPath);
   }
 }
@@ -52,14 +64,14 @@ function startPrintServer() {
     : path.join(__dirname, "..", "SGAPrintSrv.exe");
 
   if (fs.existsSync(printSrvPath)) {
-    console.log(`[Main] Iniciando servidor de impressão em: ${printSrvPath}`);
+    log.info(`[Main] Iniciando servidor de impressão em: ${printSrvPath}`);
     printServerProcess = execFile(printSrvPath, (error) => {
       if (error && !error.killed) {
-        console.error("[Main] Erro no servidor de impressão:", error);
+        log.error("[Main] Erro no servidor de impressão:", error);
       }
     });
   } else {
-    console.error(
+    log.error(
       `[Main] SGAPrintSrv.exe não encontrado no caminho: ${printSrvPath}`,
     );
   }
@@ -67,7 +79,7 @@ function startPrintServer() {
 
 function stopPrintServer() {
   if (printServerProcess) {
-    console.log("[Main] Finalizando processo do servidor de impressão...");
+    log.info("[Main] Finalizando processo do servidor de impressão...");
     printServerProcess.kill();
     printServerProcess = null;
   }
@@ -75,33 +87,33 @@ function stopPrintServer() {
 
 function registerKioskShortcuts() {
   globalShortcut.register("Control+Shift+Q", () => {
-    console.log("Fechando app via atalho de emergência.");
+    log.info("Fechando app via atalho de emergência.");
     app.exit(0);
   });
 
   globalShortcut.register("CommandOrControl+Escape", () => {
-    console.log("Menu Iniciar bloqueado.");
+    log.info("Menu Iniciar bloqueado.");
   });
   globalShortcut.register("Alt+Tab", () => {
-    console.log("Alt+Tab bloqueado.");
+    log.info("Alt+Tab bloqueado.");
   });
   globalShortcut.register("Alt+F4", () => {
-    console.log("Alt+F4 bloqueado no totem.");
+    log.info("Alt+F4 bloqueado no totem.");
   });
   globalShortcut.register("CommandOrControl+W", () => {
-    console.log("Ctrl+W bloqueado.");
+    log.info("Ctrl+W bloqueado.");
   });
   globalShortcut.register("CommandOrControl+R", () => {
-    console.log("F5/Ctrl+R bloqueado.");
+    log.info("F5/Ctrl+R bloqueado.");
   });
   globalShortcut.register("F5", () => {
-    console.log("F5 bloqueado.");
+    log.info("F5 bloqueado.");
   });
   globalShortcut.register("F11", () => {
-    console.log("F11 bloqueado.");
+    log.info("F11 bloqueado.");
   });
   globalShortcut.register("CommandOrControl+Shift+I", () => {
-    console.log("DevTools bloqueado.");
+    log.info("DevTools bloqueado.");
   });
 }
 
@@ -140,10 +152,8 @@ async function buildWindow() {
       contextIsolation: true,
       nodeIntegration: false,
       enableRemoteModule: false,
-      webviewTag: true, // Obrigatório para rodar a WebView do Detran
+      webviewTag: true,
       devTools: !kioskEnabled,
-
-      // AJUSTES EXTRA DE SEGURANÇA DE REDE (Resolve falhas na comunicação e CORS da WebView)
       webSecurity: false,
       allowRunningInsecureContent: true,
     },
@@ -157,7 +167,7 @@ async function buildWindow() {
 
   mainWindow.webContents.on("did-fail-load", () => {
     if (store.get("kiosk", true)) {
-      console.log("Falha ao carregar, tentando novamente em 5s...");
+      log.warn("Falha ao carregar, tentando novamente em 5s...");
       setTimeout(() => {
         if (mainWindow) mainWindow.reload();
       }, 5000);
@@ -199,24 +209,58 @@ async function buildWindow() {
   });
 }
 
+function setupAutoUpdater() {
+  autoUpdater.on("update-available", (info) => {
+    log.info(
+      `[AutoUpdate] Uma nova versão (${info.version}) foi detectada. Iniciando download...`,
+    );
+  });
+
+  autoUpdater.on("update-downloaded", (info) => {
+    log.info(
+      `[AutoUpdate] Download concluído com sucesso para a versão: ${info.version}`,
+    );
+
+    // Abre o modal nativo informando sobre o reinício necessário
+    dialog
+      .showMessageBox({
+        type: "info",
+        title: "Atualização do Sistema",
+        message: `Uma nova versão (${info.version}) foi baixada com sucesso. O sistema precisa reiniciar para aplicar as mudanças.`,
+        buttons: ["Atualizar Agora", "Mais Tarde"],
+        defaultId: 0,
+      })
+      .then(({ response }) => {
+        if (response === 0) {
+          log.info(
+            "[AutoUpdate] O usuário escolheu reiniciar. Forçando quitAndInstall...",
+          );
+          autoUpdater.quitAndInstall();
+        }
+      });
+  });
+
+  autoUpdater.on("error", (err) => {
+    log.error("[AutoUpdate] Falha no processo de verificação automática:", err);
+  });
+}
+
 app.whenReady().then(() => {
   startPrintServer();
   buildWindow();
+  setupAutoUpdater(); // Inicializa os ouvintes do atualizador avançado
 
-  // --- CONFIGURAÇÃO E GATILHOS DO AUTO-UPDATER ---
   // Checa se existem atualizações na inicialização após 5 segundos
   setTimeout(() => {
-    console.log(
-      "[AutoUpdate] Verificando novas atualizações no repositório...",
-    );
+    log.info("[AutoUpdate] Verificando novas atualizações no repositório...");
     autoUpdater.checkForUpdatesAndNotify();
   }, 5000);
 
   // Mantém um looping checando novas versões de hora em hora caso o Totem fique ligado direto
   setInterval(
     () => {
-      console.log("[AutoUpdate] Checando atualizações de rotina...");
-      autoUpdater.checkForUpdates();
+      log.info("[AutoUpdate] Checando atualizações de rotina...");
+      autoUpdater.checkForUpdatesAndNotify();
     },
     1000 * 60 * 60 * 1,
   );
@@ -226,28 +270,6 @@ app.whenReady().then(() => {
       buildWindow();
     }
   });
-});
-
-// Eventos ouvintes do Auto-Updater para garantir a atualização em silêncio
-autoUpdater.on("update-available", () => {
-  console.log(
-    "[AutoUpdate] Uma nova versão foi detectada e o download foi iniciado...",
-  );
-});
-
-autoUpdater.on("update-downloaded", () => {
-  console.log(
-    "[AutoUpdate] Download concluído! Reiniciando e aplicando atualização de forma silenciosa...",
-  );
-  // Fecha a janela principal e roda o instalador NSIS silencioso em segundo plano
-  autoUpdater.quitAndInstall();
-});
-
-autoUpdater.on("error", (err) => {
-  console.error(
-    "[AutoUpdate] Falha no processo de verificação automática:",
-    err,
-  );
 });
 
 app.on("window-all-closed", () => {
@@ -311,7 +333,6 @@ ipcMain.handle("get-triagem-url", () => {
 ipcMain.handle("get-painel-url", () => {
   const token = store.get("painelToken", "").trim();
 
-  // Se o token já for uma URL completa, usa ela direto
   if (token.startsWith("http://") || token.startsWith("https://")) {
     return token;
   }
