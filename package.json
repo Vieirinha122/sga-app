@@ -1,0 +1,82 @@
+{
+  "name": "sga-app",
+  "version": "1.0.1",
+  "description": "Aplicação desktop Electron para triagem e painel do SGA.",
+  "main": "src/main.js",
+  "scripts": {
+    "dev": "electron .",
+    "package": "cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --win dir --x64",
+    "build:totem": "cross-env CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --win zip nsis --x64"
+  },
+  "keywords": [
+    "electron",
+    "kiosk",
+    "sga",
+    "triagem",
+    "painel"
+  ],
+  "author": "SGA",
+  "license": "MIT",
+  "dependencies": {
+    "electron-store": "^7.0.0",
+    "electron-updater": "^6.8.3",
+    "regedit": "^5.1.4"
+  },
+  "devDependencies": {
+    "cross-env": "^10.1.0",
+    "electron": "^36.9.5",
+    "electron-builder": "^26.8.1",
+    "rcedit": "^5.0.2"
+  },
+  "build": {
+    "appId": "com.sga.app",
+    "productName": "SGA",
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "Arthur-Vieira-Sociiz",
+        "repo": "SEU_REPOSITORIO_DO_GITHUB"
+      }
+    ],
+    "extraFiles": [
+      {
+        "from": "setup.ps1",
+        "to": "setup.ps1"
+      },
+      {
+        "from": "instalar.bat",
+        "to": "instalar.bat"
+      },
+      {
+        "from": "SGAPrintSrv.exe",
+        "to": "SGAPrintSrv.exe"
+      }
+    ],
+    "win": {
+      "target": [
+        "dir",
+        "zip",
+        "nsis"
+      ],
+      "requestedExecutionLevel": "requireAdministrator",
+      "signtoolOptions": null
+    },
+    "nsis": {
+      "oneClick": true,
+      "allowToChangeInstallationDirectory": false,
+      "createDesktopShortcut": false,
+      "createStartMenuShortcut": false,
+      "perMachine": true
+    },
+    "files": [
+      "src/**/*",
+      "package.json"
+    ],
+    "asarUnpack": [
+      "**/node_modules/regedit/vbs/**"
+    ],
+    "directories": {
+      "output": "dist"
+    }
+  }
+}

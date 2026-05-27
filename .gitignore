@@ -1,0 +1,26 @@
+# Dependências do Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# Pastas de Build e Distribuição do Electron
+dist/
+out/
+build/
+
+# Logs de empacotamento locais
+forge-package-log.txt
+
+# Configurações locais e dados do Electron Store em desenvolvimento
+*.json.bak
+sga-app-settings.json
+
+# Arquivos do Sistema Operacional
+.DS_Store
+Thumbs.db
+
+# Pastas ocultas de IDEs (VS Code / WebStorm)
+.vscode/
+.idea/

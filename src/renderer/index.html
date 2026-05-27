@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self' https://sga-sociiz.netlify.app; script-src 'self'; style-src 'self' 'unsafe-inline';"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SGA</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main
+      style="
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+        margin: 0;
+        padding: 0;
+      "
+    >
+      <div
+        id="trigger-zone"
+        style="
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 80px;
+          z-index: 999998;
+          cursor: pointer;
+          background: rgba(255, 0, 0, 0.05);
+        "
+      ></div>
+
+      <header
+        id="adminHeader"
+        style="
+          position: absolute;
+          top: 15px;
+          right: 15px;
+          z-index: 999999;
+          transition:
+            opacity 0.2s ease,
+            transform 0.2s ease;
+          opacity: 0;
+          pointer-events: none;
+          display: flex;
+          align-items: center;
+          gap: 15px;
+          background: rgba(0, 0, 0, 0.85);
+          padding: 10px 20px;
+          border-radius: 8px;
+          backdrop-filter: blur(5px);
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        "
+      >
+        <div
+          class="brand"
+          id="secret-zone"
+          style="
+            cursor: pointer;
+            user-select: none;
+            font-weight: bold;
+            color: #fff;
+            padding-right: 15px;
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+          "
+        >
+          SGA
+        </div>
+        <nav style="display: flex; gap: 10px">
+          <button id="triagemButton" data-page="triagem">Triagem</button>
+          <button id="painelButton" data-page="painel">Painel</button>
+          <button id="configButton">Configurações</button>
+        </nav>
+      </header>
+
+      <section
+        id="browserSection"
+        style="width: 100%; height: 100%; margin: 0; padding: 0"
+      >
+        <webview
+          id="remoteView"
+          class="browser"
+          src="about:blank"
+          partition="persist:sgaapp"
+          allowpopups
+          nodeintegrationinsubframes
+          style="width: 100%; height: 100%; border: none"
+        ></webview>
+      </section>
+
+      <section
+        id="configSection"
+        class="hidden"
+        style="
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          z-index: 999990;
+          background: #1a1a1a;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        "
+      >
+        <div class="config-panel">
+          <h2>Configurações</h2>
+
+          <label>
+            Token de triagem:
+            <input
+              id="triagemTokenInput"
+              type="password"
+              placeholder="Informe o token de triagem"
+            />
+          </label>
+
+          <label>
+            Token do painel:
+            <input
+              id="painelTokenInput"
+              type="password"
+              placeholder="Informe o token do painel"
+            />
+          </label>
+
+          <p class="note">
+            Em modo tela cheia, o app é executado em kiosk. Fora dele, o Windows
+            fica acessível.
+          </p>
+
+          <label class="switch">
+            <span>Modo tela cheia / kiosk</span>
+            <input id="kioskCheckbox" type="checkbox" />
+          </label>
+
+          <div class="actions">
+            <button id="saveButton">Salvar</button>
+            <button id="backButton">Voltar</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer
+      style="
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        z-index: 999997;
+        pointer-events: none;
+        background: transparent;
+        border: none;
+      "
+    >
+      <span
+        id="statusText"
+        style="
+          background: rgba(0, 0, 0, 0.7);
+          color: #fff;
+          padding: 2px 8px;
+          border-radius: 4px;
+          font-size: 11px;
+          margin-left: 10px;
+          display: inline-block;
+        "
+        >Carregando...</span
+      >
+    </footer>
+
+    <script src="renderer.js"></script>
+  </body>
+</html>
