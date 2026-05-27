@@ -66,13 +66,7 @@
       "createDesktopShortcut": false,
       "createStartMenuShortcut": false,
       "perMachine": true,
-      "runAfterFinish": true,
-      "installerLanguages": [
-        "pt_BR"
-      ],
-      "include": null,
-      "installerIcon": null,
-      "installDir": "C:\\SOCIIZ\\SGA"
+      "runAfterFinish": true
     },
     "files": [
       "src/**/*",
