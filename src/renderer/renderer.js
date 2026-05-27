@@ -206,15 +206,6 @@ remoteView.addEventListener("did-fail-load", () => {
   statusText.textContent = "Falha ao carregar o conteúdo remoto.";
 });
 
-[triagemInput, painelInput].forEach((input) => {
-  input.addEventListener("focus", () => {
-    input.type = "text";
-  });
-  input.addEventListener("blur", () => {
-    input.type = "password";
-  });
-});
-
 // Inicializa a aplicação tratando possíveis erros
 initApp().catch((error) => {
   console.error(error);
