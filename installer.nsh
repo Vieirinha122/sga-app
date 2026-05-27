@@ -1,12 +1,5 @@
-!define INSTALL_DIR "C:\SOCIIZ\SGA"
-
 !macro preInit
-  SetRegView 64
-  WriteRegExpandStr HKLM "${INSTALL_SETTINGS_REG_KEY}" InstallLocation "${INSTALL_DIR}"
-  WriteRegExpandStr HKCU "${INSTALL_SETTINGS_REG_KEY}" InstallLocation "${INSTALL_DIR}"
-  SetRegView 32
-  WriteRegExpandStr HKLM "${INSTALL_SETTINGS_REG_KEY}" InstallLocation "${INSTALL_DIR}"
-  WriteRegExpandStr HKCU "${INSTALL_SETTINGS_REG_KEY}" InstallLocation "${INSTALL_DIR}"
+  StrCpy $INSTDIR "C:\SOCIIZ\SGA"
 !macroend
 
 !macro customInstall
