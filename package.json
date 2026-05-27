@@ -1,6 +1,6 @@
 {
   "name": "sga-app",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Aplicação desktop Electron para triagem e painel do SGA.",
   "main": "src/main.js",
   "scripts": {
