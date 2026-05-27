@@ -1,6 +1,6 @@
 {
   "name": "sga-app",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Aplicação desktop Electron para triagem e painel do SGA.",
   "main": "src/main.js",
   "scripts": {
@@ -58,15 +58,21 @@
       "target": [
         "nsis"
       ],
-      "requestedExecutionLevel": "asInvoker"
+      "requestedExecutionLevel": "requireAdministrator"
     },
     "nsis": {
       "oneClick": true,
       "allowToChangeInstallationDirectory": false,
       "createDesktopShortcut": false,
       "createStartMenuShortcut": false,
-      "perMachine": false,
-      "runAfterFinish": true
+      "perMachine": true,
+      "runAfterFinish": true,
+      "installerLanguages": [
+        "pt_BR"
+      ],
+      "include": null,
+      "installerIcon": null,
+      "installDir": "C:\\SOCIIZ\\SGA"
     },
     "files": [
       "src/**/*",
