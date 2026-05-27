@@ -1,13 +1,19 @@
 !macro preInit
+  SetShellVarContext all
   StrCpy $INSTDIR "C:\SOCIIZ\SGA"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_GUID}" "InstallLocation" "C:\SOCIIZ\SGA"
 !macroend
 
 !macro customInstall
+  ; Força o diretório novamente caso o NSIS tenha sobrescrito
+  SetOutPath "C:\SOCIIZ\SGA"
+  StrCpy $INSTDIR "C:\SOCIIZ\SGA"
+
   ; Mata o processo se estiver rodando
   nsExec::ExecToLog 'taskkill /f /im SGA.exe'
 
   ; Cria a tarefa agendada para iniciar com o Windows com privilégios máximos
-  nsExec::ExecToLog 'schtasks /create /tn "SGA-Totem" /tr "\"$INSTDIR\SGA.exe\"" /sc onlogon /delay 0000:10 /rl HIGHEST /f'
+  nsExec::ExecToLog 'schtasks /create /tn "SGA-Totem" /tr "\"C:\SOCIIZ\SGA\SGA.exe\"" /sc onlogon /delay 0000:10 /rl HIGHEST /f'
 
   ; Cria o diretório de configuração
   CreateDirectory "$APPDATA\sga-app"
