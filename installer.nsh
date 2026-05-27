@@ -1,3 +1,14 @@
+!define INSTALL_DIR "C:\SOCIIZ\SGA"
+
+!macro preInit
+  SetRegView 64
+  WriteRegExpandStr HKLM "${INSTALL_SETTINGS_REG_KEY}" InstallLocation "${INSTALL_DIR}"
+  WriteRegExpandStr HKCU "${INSTALL_SETTINGS_REG_KEY}" InstallLocation "${INSTALL_DIR}"
+  SetRegView 32
+  WriteRegExpandStr HKLM "${INSTALL_SETTINGS_REG_KEY}" InstallLocation "${INSTALL_DIR}"
+  WriteRegExpandStr HKCU "${INSTALL_SETTINGS_REG_KEY}" InstallLocation "${INSTALL_DIR}"
+!macroend
+
 !macro customInstall
   ; Mata o processo se estiver rodando
   nsExec::ExecToLog 'taskkill /f /im SGA.exe'
