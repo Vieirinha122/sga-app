@@ -1,6 +1,6 @@
 {
   "name": "sga-app",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "description": "Aplicação desktop Electron para triagem e painel do SGA.",
   "main": "src/main.js",
   "scripts": {
@@ -42,14 +42,6 @@
     ],
     "extraFiles": [
       {
-        "from": "setup.ps1",
-        "to": "setup.ps1"
-      },
-      {
-        "from": "instalar.bat",
-        "to": "instalar.bat"
-      },
-      {
         "from": "SGAPrintSrv.exe",
         "to": "SGAPrintSrv.exe"
       }
@@ -66,7 +58,8 @@
       "createDesktopShortcut": false,
       "createStartMenuShortcut": false,
       "perMachine": true,
-      "runAfterFinish": true
+      "runAfterFinish": true,
+      "include": "installer.nsh"
     },
     "files": [
       "src/**/*",
