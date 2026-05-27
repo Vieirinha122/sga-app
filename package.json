@@ -1,6 +1,6 @@
 {
   "name": "sga-app",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Aplicação desktop Electron para triagem e painel do SGA.",
   "main": "src/main.js",
   "scripts": {
@@ -35,7 +35,7 @@
       {
         "provider": "github",
         "owner": "Arthur-Vieira-Sociiz",
-        "repo": "SEU_REPOSITORIO_DO_GITHUB"
+        "repo": "https://github.com/Vieirinha122/sga-app"
       }
     ],
     "extraFiles": [
